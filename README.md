@@ -1,5 +1,5 @@
 # 02KG_bodaboda-backend
-This will contain all the endpoints for maxmart applications
+This will contain all the endpoints for O2KG applications
 
 # set up
 1. clone repo
