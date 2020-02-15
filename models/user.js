@@ -4,44 +4,45 @@ module.exports = (sequelize, DataTypes) => {
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
-      notNull: {
-        msg: "User firtname is required"
+      validate: {
+        notNull: {
+          msg: 'Please enter firstName'
+        }
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
-      notNull: {
-        msg: "User lastname is required"
+      validate: {
+        notNull: {
+          msg: 'Please enter lastName'
+        }
       }
     },
     email: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-      notNull: {
-        msg: "User email is required"
-      },
       validate: {
         isEmail: {
-          msg: "Phone number invalid."
+          args:true,
+          msg: "Email is invalid."
+        },
+        notNull:{
+          args:true,
+          msg:"Please enter email"
         }
+
       }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      notNull: {
-        msg: "User password is required"
-      }
     },
     nin: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-      notNull: {
-        msg: "User nin number is required"
-      },
       validate: {
         len: {
           args: [14, 20],
@@ -53,32 +54,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-      notNull: {
-        msg: "User phone number is required"
-      },
       validate: {
         len: {
-          args: [7, 20],
+          args: [10, 20],
           msg: "Phone number invalid, too short."
-        },
-        isNumeric: {
-          msg: "not a valid phone number."
         }
       }
     },
     photo: {
       type: DataTypes.STRING,
       allowNull: false,
-      notNull: {
-        msg: "User photo is required"
-      }
     },
     role: {
       type: DataTypes.ENUM('administrator', 'agent'),
       allowNull: false,
-      notNull: {
-        msg: "User role is required"
-      }
     }
   }, {});
   User.associate = function (models) {
