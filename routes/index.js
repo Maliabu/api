@@ -1,20 +1,16 @@
 import Users from '../controllers/auth'
-import CheckAuth from '../middleware/check-auth'
+import checkAuth from '../middleware/check-auth'
 import Bodabodas from '../controllers/bodaboda'
+import Loans from '../controllers/loan'
+import Expenses from '../controllers/expenses'
+import  Statistics from '../controllers/statistics'
+import Savings from '../controllers/savings'
 const { uuid } = require('uuidv4');
-
 const multer = require("multer");
-
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        if (file.fieldname === "LC1_letter" || file.fieldname === "stage_chairman_letter" || file.fieldname === "application_form") {
-            // if uploading docs
-            cb(null, "./uploads/documents");
-        }
-        else { // else uploading images
-            cb(null, "./uploads/images");
-        }
+        cb(null, "./uploads/images");
     },
     filename: (req, file, cb) => { // naming file
         cb(null, file.fieldname + "-" + uuid() + "-" + file.originalname);
@@ -22,28 +18,17 @@ const fileStorage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    if (file.fieldname === "LC1_letter" || file.fieldname === "stage_chairman_letter" || file.fieldname === "application_form") { // if uploading resume
-        if (
-            file.mimetype === 'application/pdf' ||
-            file.mimetype === 'application/docx' ||
-            file.mimetype === 'application/msword' ||
-            file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        ) { // check file type to be pdf, doc, or docx
-            cb(null, true);
-        } else {
-            cb(null, false); // else fails
-        }
-    } else { // else uploading image
-        if (
-            file.mimetype === 'image/png' ||
-            file.mimetype === 'image/jpg' ||
-            file.mimetype === 'image/jpeg'
-        ) { // check file type to be png, jpeg, or jpg
-            cb(null, true);
-        } else {
-            cb(null, false); // else fails
-        }
+
+    if (
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg'
+    ) { // check file type to be png, jpeg, or jpg
+        cb(null, true);
+    } else {
+        cb(null, false); // else fails
     }
+
 };
 
 const upload = multer(
@@ -106,19 +91,38 @@ const upload = multer(
 
 
 export default (app) => {
-
     app.get('/api/V1', (req, res) => res.status(200).send({
         message: 'Welcome to the 02KG bodaboda api',
     }));
     app.post('/api/v1/signup', upload, Users.signUp); // API route for user to signup
     app.post('/api/v1/login', Users.login); // API route for user to login
-    app.delete('/api/V1/users/:user_id', CheckAuth, Users.deleteUser);// API route for deleting user
-    app.put('/api/V1/users/:user_id', CheckAuth, upload, Users.updateUser);// API route fro modifying user
-    app.get('/api/V1/agents', Users.listAgents); // List of all agents,
-    app.post('/api/V1/bodabodas', upload, Bodabodas.createBodaboda);
-    app.get('/api/V1/bodabodas', upload, Bodabodas.listBodabodas);
-    app.delete('/api/V1/bodabodas/:bodaboda_id', CheckAuth, Bodabodas.deleteBodaboda);
-    app.put('/api/V1/bodabodas/:bodaboda_id', upload, Bodabodas.updateBodaboda);
+    app.delete('/api/V1/users/:user_id', checkAuth, checkAuth, Users.deleteUser);// API route for deleting user
+    app.put('/api/V1/users/:user_id', checkAuth, upload, Users.updateUser);// API route fro modifying user
+    app.get('/api/V1/agents', checkAuth, Users.listAgents); // List of all agents,
+    app.post('/api/V1/bodabodas', checkAuth, upload, Bodabodas.createBodaboda);
+    app.get('/api/V1/bodabodas', checkAuth, upload, Bodabodas.listBodabodas);
+    app.delete('/api/V1/bodabodas/:bodaboda_id', checkAuth, Bodabodas.deleteBodaboda);
+    app.put('/api/V1/bodabodas/:bodaboda_id', checkAuth, upload, Bodabodas.updateBodaboda);
+    app.post('/api/v1/loans',checkAuth,Loans.createLoan);
+    app.get('/api/v1/loans',Loans.listLoans);
+    app.delete('/api/v1/loans/:loanId',Loans.deleteLoan);
+    app.put('/api/v1/loans/:loanId',Loans.updateloan);
+    app.put('/api/v1/payloan/:loanId',Loans.payLoan);
+    app.get('/api/v1/statistics/bodabodas_count',Statistics.countRiders);
+    app.get('/api/v1/statistics/agents_count',Statistics.countAgents);
+    app.get('/api/v1/statistics/loans_count',Statistics.countLoans);
+    app.get('/api/v1/statistics/unpaid_trend',Statistics.unpaid_trend);
+    app.get('/api/v1/statistics/paid_trend',Statistics.paid_trend);
+    app.post('/api/v1/expenses',checkAuth,Expenses.createExpense);
+    app.get('/api/v1/expenses',checkAuth,Expenses.listExpenses);
+    app.delete('/api/v1/expenses/:expenseId',checkAuth,Expenses.deleteExpense);
+    app.put('/api/v1/expenses/:expenseId',checkAuth,Expenses.updateExpense);
+    app.post('/api/v1/savings',checkAuth,Savings.createSaving);
+    app.get('/api/v1/savings',checkAuth,Savings.listSavings);
+    app.delete('/api/v1/savings/:savingId',checkAuth,Savings.deleteSaving);
+    app.put('/api/v1/savings/:savingId',checkAuth,Savings.updateSaving);
+    
+    
 
 
 }

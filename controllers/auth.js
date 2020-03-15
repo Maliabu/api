@@ -18,7 +18,8 @@ class Users {
             phoneNumber,
             nin,
             role
-        } = req.body
+        } = req.body;
+        console.log(req.body);
         const photo = req.files.photo[0].path;
         bcrypt.hash(password, 10, (err, hash) => {
             if (err) {
@@ -85,7 +86,11 @@ class Users {
                         }, "secret")
                         return res.status(200).json({
                             message: "Auth successful",
-                            user: user,
+                            user: {
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                photo: 'http://127.0.0.1:3000/' + user.photo.slice(8)
+                            },
                             token: token
                         });
                     }
@@ -101,39 +106,31 @@ class Users {
     }
 
     static deleteUser(req, res) {
-        const { userData } = req.body
-        if (userData.role == "administrator") {
-            return User.findByPk(req.params.user_id)
-                .then(user => {
-                    if (!user) {
-                        return res.status(404).send({
-                            message: 'User Not Found',
-                        });
-                    }
-                    return fs.unlink(`${user.photo}`, function (err) {
-                        if (err && err.code == 'ENOENT') {
-                            // file doens't exist
-                            console.info("Photo doesn't exist, won't remove it.");
-                        } else if (err) {
-                            // other errors, e.g. maybe we don't have enough permission
-                            console.error("Error occurred while trying to remove file");
-                        } else {
-                            user
-                                .destroy()
-                                .then(() => res.status(200).send({
-                                    message: 'user successfully deleted'
-                                }))
-                                .catch(error => res.status(400).send(error));
-                        }
+        return User.findByPk(req.params.user_id)
+            .then(user => {
+                if (!user) {
+                    return res.status(404).send({
+                        message: 'User Not Found',
                     });
+                }
+                return fs.unlink(`${user.photo}`, function (err) {
+                    if (err && err.code == 'ENOENT') {
+                        // file doens't exist
+                        console.info("Photo doesn't exist, won't remove it.");
+                    } else if (err) {
+                        // other errors, e.g. maybe we don't have enough permission
+                        console.error("Error occurred while trying to remove file");
+                    } else {
+                        user
+                            .destroy()
+                            .then(() => res.status(200).send({
+                                message: 'user successfully deleted'
+                            }))
+                            .catch(error => res.status(400).send(error));
+                    }
+                });
 
-                }).catch(error => res.status(404).send(error))
-
-        } else {
-            res.status(400).json({
-                error: "Your access level doesnt permit you to carryout this action"
-            })
-        }
+            }).catch(error => res.status(404).send(error))
 
     }
     static updateUser(req, res) {
@@ -146,69 +143,64 @@ class Users {
             role
         } = req.body
         var photo = '';
-        console.log()
         if (req.files.photo) {
             photo = req.files.photo[0].path;
         }
-        const password='';
-        if(req.body.password){
-             password = bcrypt.hashSync(req.body.password, 10);
+        const password = '';
+        if (req.body.password) {
+            password = bcrypt.hashSync(req.body.password, 10);
         }
-       
-        
-            return User.findByPk(req.params.user_id)
-                .then(user => {
-                    if (photo != '') {
-                        console.log(user.photo)
-                        fs.unlink(user.photo, function (err) {
-                            if (err && err.code == 'ENOENT') {
-                                // file doens't exist
-                                console.log(err)
-                                console.info("Photo doesn't exist, won't remove it.");
-                            } else if (err) {
-                                // other errors, e.g. maybe we don't have enough permission
-                                console.error("Error occurred while trying to remove file");
-                            }
-                        });
-
-                    }
-
-                    user
-                        .update({
-                            firstName: firstName || user.firstName,
-                            lastName: lastName || user.lastName,
-                            email: email || user.email,
-                            password: password || user.password,
-                            phoneNumber: phoneNumber || user.phoneNumber,
-                            nin: nin || user.nin,
-                            role: role || user.role,
-                            photo: photo || user.photo
 
 
-                        })
-                        .then((updatedUser) => res.status(200).send({
-                            message: 'user successfully updated',
-                            user: {
-                                firstName: firstName || updatedUser.firstNam,
-                                lastName: lastName || updatedUser.lastName,
-                                email: email || updatedUser.email,
-                                password: password || updatedUser.password,
-                                phoneNumber: phoneNumber || updatedUser.phoneNumber,
-                                nin: nin || updatedUser.nin,
-                                role: role || updatedUser.role,
-                                photo: photo || updatedUser.photo
+        return User.findByPk(req.params.user_id)
+            .then(user => {
+                if (photo != '') {
+                    console.log(user.photo)
+                    fs.unlink(user.photo, function (err) {
+                        if (err && err.code == 'ENOENT') {
+                            // file doens't exist
+                            console.log(err)
+                            console.info("Photo doesn't exist, won't remove it.");
+                        } else if (err) {
+                            // other errors, e.g. maybe we don't have enough permission
+                            console.error("Error occurred while trying to remove file");
+                        }
+                    });
 
-                            }
-                        }))
-                        .catch(error => res.status(400).send(error));
+                }
 
-                }).catch(error => {
-                    res.status(400).json(error)
-                })
+                user
+                    .update({
+                        firstName: firstName || user.firstName,
+                        lastName: lastName || user.lastName,
+                        email: email || user.email,
+                        password: password || user.password,
+                        phoneNumber: phoneNumber || user.phoneNumber,
+                        nin: nin || user.nin,
+                        role: role || user.role,
+                        photo: photo || user.photo
 
 
-        
+                    })
+                    .then((updatedUser) => res.status(200).send({
+                        message: 'user successfully updated',
+                        user: {
+                            firstName: firstName || updatedUser.firstNam,
+                            lastName: lastName || updatedUser.lastName,
+                            email: email || updatedUser.email,
+                            password: password || updatedUser.password,
+                            phoneNumber: phoneNumber || updatedUser.phoneNumber,
+                            nin: nin || updatedUser.nin,
+                            role: role || updatedUser.role,
+                            photo: photo || updatedUser.photo
 
+                        }
+                    }))
+                    .catch(error => res.status(400).send(error));
+
+            }).catch(error => {
+                res.status(400).json(error)
+            })
 
     }
     static listAgents(req, res) {
@@ -216,9 +208,23 @@ class Users {
             where: {
                 role: "agent"
             }
-        }).then(agents => res.status(200).json({
-            agents: agents
-        }))
+        }).then(agents => {
+            const response = {
+                agents: agents.map(agent => {
+                    return {
+                        id: agent.id,
+                        firstName: agent.firstName,
+                        lastName: agent.lastName,
+                        nin: agent.nin,
+                        phoneNumber: agent.phoneNumber,
+                        email: agent.email,
+                        photo: 'http://127.0.0.1:3000/' + agent.photo.slice(8)
+                    };
+                })
+
+            };
+            res.status(200).json(response);
+        })
     }
 
 }

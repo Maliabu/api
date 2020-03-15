@@ -58,66 +58,85 @@ class Bodabodas {
 
     static listBodabodas(req, res) {
         Bodaboda.findAll()
-            .then(bodabodas => res.status(200).json({
-                bodabodas: bodabodas
-            })).catch(error => res.status(400).json({
+            .then(bodabodas => {
+                const response = {
+                    riders: bodabodas.map(rider => {
+                        return {
+                            id: rider.id,
+                            firstName: rider.firstName,
+                            lastName: rider.lastName,
+                            name: rider.firstName +" "+ rider.lastName,
+                            nin: rider.nin,
+                            phoneNumber: rider.phoneNumber,
+                            gurantor1_nin: rider.gurantor1_nin,
+                            gurantor2_nin: rider.gurantor2_nin,
+                            date_of_birth: rider.date_of_birth,
+                            passport_photo: 'http://127.0.0.1:3000/' + rider.passport_photo.slice(8),
+                            LC1_letter: 'http://127.0.0.1:3000/' + rider.LC1_letter.slice(8),
+                            application_form: 'http://127.0.0.1:3000/' + rider.application_form.slice(8),
+                            stage_chairman_letter: 'http://127.0.0.1:3000/' + rider.stage_chairman_letter.slice(8),
+                            gurantor1_passport_photo: 'http://127.0.0.1:3000/' + rider.gurantor1_passport_photo.slice(8),
+                            gurantor2_passport_photo: 'http://127.0.0.1:3000/' + rider.gurantor2_passport_photo.slice(8),
+                            gurantor1_stagecard: 'http://127.0.0.1:3000/' + rider.gurantor1_stagecard.slice(8),
+                            gurantor2_stagecard: 'http://127.0.0.1:3000/' + rider.gurantor2_stagecard.slice(8),
+                            address_proof: 'http://127.0.0.1:3000/' + rider.address_proof.slice(8),
+                            riding_permit: 'http://127.0.0.1:3000/' + rider.riding_permit.slice(8)
+                        };
+                    })
+
+                };
+                res.status(200).json(response);
+            }).catch(error => res.status(400).json({
                 error: error
             }))
     }
 
     static deleteBodaboda(req, res) {
-        const { userData } = req.body;
-        if (userData.role == "administrator") {
-            return Bodaboda.findByPk(req.params.bodaboda_id)
-                .then(bodaboda => {
-                    if (!bodaboda) {
-                        return res.status(404).send({
-                            message: 'User Not Found',
-                        });
-                    } else {
-                        bodaboda
-                            .destroy()
-                            .then(() => {
-                                var files = [bodaboda["LC1_letter"], bodaboda["riding_permit"], bodaboda["stage_chairman_letter"], bodaboda["application_form"], bodaboda["passport_photo"], bodaboda["gurantor1_passport_photo"], bodaboda["gurantor2_passport_photo"], bodaboda["address_proof"], bodaboda["gurantor1_stagecard"], bodaboda["gurantor2_stagecard"]];
-                                console.log(files)
-                                var i = files.length;
-                                files.forEach(filepath => {
-                                    fs.unlink(filepath, function (err) {
-                                        i--;
-                                        if (err) {
-                                            console.log(err)
-                                            return;
-                                        } else if (i <= 0) {
-                                            console.log("All files have been removed")
-                                        }
-                                    });
+        return Bodaboda.findByPk(req.params.bodaboda_id)
+            .then(bodaboda => {
+                if (!bodaboda) {
+                    return res.status(404).send({
+                        message: 'User Not Found',
+                    });
+                } else {
+                    bodaboda
+                        .destroy()
+                        .then(() => {
+                            var files = [bodaboda["LC1_letter"], bodaboda["riding_permit"], bodaboda["stage_chairman_letter"], bodaboda["application_form"], bodaboda["passport_photo"], bodaboda["gurantor1_passport_photo"], bodaboda["gurantor2_passport_photo"], bodaboda["address_proof"], bodaboda["gurantor1_stagecard"], bodaboda["gurantor2_stagecard"]];
+                            console.log(files)
+                            var i = files.length;
+                            files.forEach(filepath => {
+                                fs.unlink(filepath, function (err) {
+                                    i--;
+                                    if (err) {
+                                        console.log(err)
+                                        return;
+                                    } else if (i <= 0) {
+                                        console.log("All files have been removed")
+                                    }
                                 });
-
-                                res.status(200).json({
-                                    message: "Bodaboda deleted succesfully"
-                                })
-                            })
-                            .catch(error => {
-                                console.log(error)
-                                res.status(400).json({
-                                    error: error
-                                })
                             });
-                    }
+
+                            res.status(200).json({
+                                message: "Bodaboda deleted succesfully"
+                            })
+                        })
+                        .catch(error => {
+                            console.log(error)
+                            res.status(400).json({
+                                error: error
+                            })
+                        });
+                }
 
 
-                }).catch(error => {
-                    console.log(error)
-                    res.status(400).json({
-                        error: error
-                    })
+            }).catch(error => {
+                console.log(error)
+                res.status(400).json({
+                    error: error
                 })
-
-        } else {
-            res.status(400).json({
-                error: "Your access level doesnt permit you to carryout this action"
             })
-        }
+
 
     }
     static updateBodaboda(req, res) {
@@ -130,13 +149,12 @@ class Bodabodas {
             gurantor1_nin,
             gurantor2_nin,
         } = req.body;
-        
+
         var LC1_letter = '';
         var riding_permit = '';
         var stage_chairman_letter = '';
         var application_form = '';
         var passport_photo = '';
-        var gurantor1_stagecard = '';
         var gurantor1_stagecard = '';
         var address_proof = '';
         var gurantor1_passport_photo = '';

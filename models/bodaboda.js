@@ -76,7 +76,9 @@ module.exports = (sequelize, DataTypes) => {
 
   }, {});
   Bodaboda.associate = function (models) {
-    // associations can be defined here
+    Bodaboda.hasMany(models.Loan, {
+      foreignKey: 'bodabodaId',
+    });
   };
   return Bodaboda;
 };
