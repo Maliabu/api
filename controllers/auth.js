@@ -60,6 +60,7 @@ class Users {
             email,
             password
         } = req.body
+        console.log(req.body)
         User.findOne({
             where: {
                 email: email
@@ -85,7 +86,11 @@ class Users {
                         }, "secret")
                         return res.status(200).json({
                             message: "Auth successful",
-                            user: user,
+                            user: {
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                photo: user.photo.slice(7)
+                            },
                             token: token
                         });
                     }
@@ -94,6 +99,7 @@ class Users {
                     });
                 });
             }).catch(err => {
+                console.log("error", err)
                 res.status(401).json({
                     message: "Auth failed"
                 })
@@ -150,75 +156,87 @@ class Users {
         if (req.files.photo) {
             photo = req.files.photo[0].path;
         }
-        const password='';
-        if(req.body.password){
-             password = bcrypt.hashSync(req.body.password, 10);
+        const password = '';
+        if (req.body.password) {
+            password = bcrypt.hashSync(req.body.password, 10);
         }
-       
-        
-            return User.findByPk(req.params.user_id)
-                .then(user => {
-                    if (photo != '') {
-                        console.log(user.photo)
-                        fs.unlink(user.photo, function (err) {
-                            if (err && err.code == 'ENOENT') {
-                                // file doens't exist
-                                console.log(err)
-                                console.info("Photo doesn't exist, won't remove it.");
-                            } else if (err) {
-                                // other errors, e.g. maybe we don't have enough permission
-                                console.error("Error occurred while trying to remove file");
-                            }
-                        });
-
-                    }
-
-                    user
-                        .update({
-                            firstName: firstName || user.firstName,
-                            lastName: lastName || user.lastName,
-                            email: email || user.email,
-                            password: password || user.password,
-                            phoneNumber: phoneNumber || user.phoneNumber,
-                            nin: nin || user.nin,
-                            role: role || user.role,
-                            photo: photo || user.photo
 
 
-                        })
-                        .then((updatedUser) => res.status(200).send({
-                            message: 'user successfully updated',
-                            user: {
-                                firstName: firstName || updatedUser.firstNam,
-                                lastName: lastName || updatedUser.lastName,
-                                email: email || updatedUser.email,
-                                password: password || updatedUser.password,
-                                phoneNumber: phoneNumber || updatedUser.phoneNumber,
-                                nin: nin || updatedUser.nin,
-                                role: role || updatedUser.role,
-                                photo: photo || updatedUser.photo
+        return User.findByPk(req.params.user_id)
+            .then(user => {
+                if (photo != '') {
+                    console.log(user.photo)
+                    fs.unlink(user.photo, function (err) {
+                        if (err && err.code == 'ENOENT') {
+                            // file doens't exist
+                            console.log(err)
+                            console.info("Photo doesn't exist, won't remove it.");
+                        } else if (err) {
+                            // other errors, e.g. maybe we don't have enough permission
+                            console.error("Error occurred while trying to remove file");
+                        }
+                    });
 
-                            }
-                        }))
-                        .catch(error => res.status(400).send(error));
+                }
 
-                }).catch(error => {
-                    res.status(400).json(error)
-                })
+                user
+                    .update({
+                        firstName: firstName || user.firstName,
+                        lastName: lastName || user.lastName,
+                        email: email || user.email,
+                        password: password || user.password,
+                        phoneNumber: phoneNumber || user.phoneNumber,
+                        nin: nin || user.nin,
+                        role: role || user.role,
+                        photo: photo || user.photo
 
 
-        
+                    })
+                    .then((updatedUser) => res.status(200).send({
+                        message: 'user successfully updated',
+                        user: {
+                            firstName: firstName || updatedUser.firstNam,
+                            lastName: lastName || updatedUser.lastName,
+                            email: email || updatedUser.email,
+                            password: password || updatedUser.password,
+                            phoneNumber: phoneNumber || updatedUser.phoneNumber,
+                            nin: nin || updatedUser.nin,
+                            role: role || updatedUser.role,
+                            photo: photo || updatedUser.photo
+
+                        }
+                    }))
+                    .catch(error => res.status(400).send(error));
+
+            }).catch(error => {
+                res.status(400).json(error)
+            })
+
+
+
 
 
     }
     static listAgents(req, res) {
-        User.findAll({
-            where: {
-                role: "agent"
-            }
-        }).then(agents => res.status(200).json({
-            agents: agents
-        }))
+        User.findAll().then(agents => {
+
+            const response = {
+
+                agents: agents.map(agents => {
+                    return {
+                        id: agents.id,
+                        firstName: agents.firstName,
+                        lastName: agents.lastName,
+                        photo: agents.photo.slice(7),
+                        email: agents.email,
+                        nin: agents.nin,
+                        phoneNumber: agents.phoneNumber,
+                        role: agents.role
+                    };
+                })
+            };
+            res.status(200).json(response)
+        })
     }
 
 }
