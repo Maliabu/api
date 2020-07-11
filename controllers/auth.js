@@ -69,12 +69,14 @@ class Users {
             .then(user => {
                 if (!user) {
                     return res.status(401).json({
+                        error: true,
                         message: "Email or password is incorrect"
                     })
                 }
                 bcrypt.compare(password, user.password, (err, result) => {
                     if (err) {
                         res.status(401).json({
+                            error: true,
                             message: "Auth failed"
                         });
                     }
@@ -85,8 +87,10 @@ class Users {
                             role: user.role
                         }, "secret")
                         return res.status(200).json({
+                            error: false,
                             message: "Auth successful",
                             user: {
+                                id: user.id,
                                 firstName: user.firstName,
                                 lastName: user.lastName,
                                 photo: user.photo.slice(7)
@@ -95,12 +99,14 @@ class Users {
                         });
                     }
                     res.status(401).json({
+                        error: true,
                         message: "Auth failed"
                     });
                 });
             }).catch(err => {
                 console.log("error", err)
                 res.status(401).json({
+                    error: true,
                     message: "Auth failed"
                 })
             })

@@ -25,6 +25,13 @@ module.exports = (sequelize, DataTypes) => {
         as: 'memberId'
       }
     },
+    account_type:{
+      type: DataTypes.STRING,
+      allowNull: {
+        args: false,
+        msg: "Please fill account type"
+      }
+    },
     amount: {
       type: DataTypes.BIGINT,
       allowNull: {

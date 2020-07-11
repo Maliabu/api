@@ -4,6 +4,9 @@ import Members from '../controllers/member'
 import Savings from '../controllers/saving'
 import Loans from '../controllers/loan'
 import Expenses from '../controllers/expense'
+import Statistics from '../controllers/statistics'
+import Transactions from '../controllers/transaction'
+
 
 
 const { uuid } = require('uuidv4');
@@ -64,14 +67,17 @@ export default (app) => {
     app.put('/api/V1/users/:user_id', CheckAuth, upload, Users.updateUser);// API route fro modifying user
     app.get('/api/V1/agents', Users.listAgents); // List of all agents,
     app.post('/api/V1/members', CheckAuth, upload, Members.createMember);
-    app.get('/api/V1/members', upload, Members.listMembers);
+    app.post('/api/V1/member_login', Members.memberLogin);
+    app.get('/api/V1/members', Members.listMembers);
     app.delete('/api/V1/members/:member_id', CheckAuth, Members.deleteMember);
     app.put('/api/V1/members/:member_id', upload, Members.updateMember);
     app.post('/api/V1/savings', CheckAuth, Savings.createSaving);
+    app.post('/api/V1/debitSaving', CheckAuth, Savings.debitSaving);
     app.get('/api/V1/savings', CheckAuth, Savings.listSaving);
     app.put('/api/V1/savings/:saving_id', CheckAuth, Savings.updateSaving);
     app.delete('/api/V1/savings/:saving_id', CheckAuth, Savings.deleteSaving);
     app.post('/api/V1/loans', CheckAuth, Loans.createLoan);
+    app.post('/api/V1/payLoan', CheckAuth, Loans.payLoan);
     app.get('/api/V1/loans', CheckAuth, Loans.listLoan);
     app.put('/api/V1/loans/:loan_id', CheckAuth, Loans.updateLoan);
     app.delete('/api/V1/loans/:loan_id', CheckAuth, Loans.deleteLoan);
@@ -79,5 +85,12 @@ export default (app) => {
     app.get('/api/V1/expenses', CheckAuth, Expenses.listExpense);
     app.put('/api/V1/expenses/:expense_id', CheckAuth, Expenses.updateLoan);
     app.delete('/api/V1/expenses/:expense_id', CheckAuth, Expenses.deleteExpense);
+    app.get('/api/V1/employees_count', CheckAuth, Statistics.employees_count);
+    app.get('/api/V1/savings_count', CheckAuth, Statistics.savings_count);
+    app.get('/api/V1/members_count', CheckAuth, Statistics.members_count);
+    app.get('/api/V1/loans_count', CheckAuth, Statistics.loans_count);
+    app.get('/api/V1/savings_trend', CheckAuth, Statistics.savings_trend);
+    app.post('/api/V1/transactions',Transactions.createTransaction);
+    app.get('/api/V1/transactions',Transactions.listTransactions);
 
 }

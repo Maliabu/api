@@ -28,9 +28,17 @@ module.exports = {
           as: 'memberId',
         }
       },
-      amount: {
+      amount_borrowed: {
         allowNull:false,
         type: Sequelize.BIGINT
+      },
+      amount_remaining: {
+        allowNull:false,
+        type: Sequelize.BIGINT
+      },
+      interest: {
+        allowNull:false,
+        type: Sequelize.INTEGER
       },
       payment_period: {
         allowNull:false,

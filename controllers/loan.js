@@ -1,4 +1,5 @@
 import model from '../models'
+const sendSms = require('./sms');
 
 
 const {
@@ -8,26 +9,111 @@ const {
 } = model;
 
 class Loans {
+    static payLoan(req, res) {
+        const {
+            memberId,
+            amount,
+            phoneNumber
+        } = req.body;
+
+        return Loan.findOne({
+            where: {
+                memberId: memberId
+            }
+        }).then(loan => {
+            if (loan) {
+
+                return loan.update({
+                    memberId: loan.memberId,
+                    userId: loan.userId,
+                    amount_remaining: parseInt(loan.amount_remaining) - parseInt(amount)
+                }).then(loan => {
+                    const welcomeMessage = 'You have paid UGX ' + amount + ' off your 2GO Loan. Your Loan Balance is ' + loan.amount_remaining;
+                    const phone = "+256" + phoneNumber.slice(1);
+                    console.log("Details", { phone, welcomeMessage })
+                    sendSms(phone, welcomeMessage);
+                    res.status(200).send({
+                        message: 'Loan amount paid successfully',
+                    })
+                })
+                    .catch(error => { 
+                        console.log(error)
+                        res.status(400).send(error)
+                     });
+
+            } else {
+                console.log("User doesn't exist")
+            }
+
+
+        }).catch(err => {
+            console.log(err);
+            res.status(404).json(err);
+        })
+
+    }
+
     static createLoan(req, res) {
         const {
             memberId,
             amount,
-            payment_period
+            interest,
+            payment_period,
+            phoneNumber
+
         } = req.body;
-
         const userId = req.userData.userId;
+        return Loan.findOne({
+            where: {
+                memberId: memberId
+            }
+        }).then(loan => {
+            if (loan) {
+                return loan.update({
+                    memberId: loan.memberId,
+                    userId: loan.userId,
+                    payment_period: loan.payment_period,
+                    amount_borrowed: parseInt(loan.amount_borrowed) + parseInt(amount),
+                    amount_remaining: parseInt(loan.amount_remaining) + parseInt(amount)
+                }).then(loan => {
+                    const welcomeMessage = 'Your 2G0 Loan has been created with UGX' + amount;
+                    const phone = "+256" + phoneNumber.slice(1);
+                    console.log("Details", { phone, welcomeMessage })
+                    sendSms(phone, welcomeMessage);
+                    res.status(200).send({
+                        message: 'Loan amount issued successfully',
+                    })
+                })
+                    .catch(error => res.status(400).send(error));
 
-        Loan.create({
-            userId,
-            memberId,
-            amount,
-            payment_period
-        }).then(loan => res.status(200).json({
-            loan: loan
-        }))
-            .catch(error => res.status(400).json({
-                error: error
-            }))
+            }
+            return Loan.create({
+                userId,
+                memberId,
+                amount_borrowed: parseInt(amount) + parseInt(interest / 100 * amount),
+                amount_remaining: parseInt(amount) + parseInt(interest / 100 * amount),
+                interest,
+                payment_period,
+            }).then(loan => {
+                const welcomeMessage = 'Your 2G0 Loan has been created with UGX ' + amount;
+                const phone = "+256" + phoneNumber.slice(1);
+                console.log("Details", { phone, welcomeMessage })
+                sendSms(phone, welcomeMessage);
+                res.status(200).json({
+                    message: "Loan created successfully",
+                    loan: loan
+                })
+            })
+                .catch(error => res.status(400).json({
+                    error: error
+                }))
+
+
+        }).catch(err => {
+            console.log(err);
+            res.status(404).json(err);
+        })
+
     }
 
     static listLoan(req, res) {
@@ -39,7 +125,7 @@ class Loans {
                 },
                 {
                     model: Member,
-                    attributes: ['firstName', 'lastName']
+                    attributes: ['id', 'firstName', 'lastName','phoneNumber']
                 }
             ]
         })
@@ -50,8 +136,12 @@ class Loans {
                         return {
                             id: loan.id,
                             member: loan.Member.firstName + " " + loan.Member.lastName,
-                            amount: loan.amount,
+                            amount_borrowed: loan.amount_borrowed,
+                            amount_remaining: loan.amount_remaining,
+                            interest: loan.interest,
                             issued_by: loan.User.firstName + " " + loan.User.lastName,
+                            memberId: loan.Member.id,
+                            phoneNumber: loan.Member.phoneNumber,
                             payment_period: loan.payment_period,
                             date_issued: loan.createdAt
                         };
@@ -68,7 +158,8 @@ class Loans {
         const {
             memberId,
             amount,
-            payment_period
+            payment_period,
+            interest,
         } = req.body;
 
         return Loan.findByPk(req.params.loan_id)
@@ -83,6 +174,7 @@ class Loans {
                         .update({
                             memberId: memberId || loan.memberId,
                             amount: amount || loan.amount,
+                            interest: interest || loan.interest,
                             payment_period: payment_period || loan.payment_period
                         })
                         .then((updateLoan) => res.status(200).send({
@@ -90,6 +182,7 @@ class Loans {
                             loan: {
                                 memberId: memberId || updateLoan.memberId,
                                 amount: amount || updateLoan.amount,
+                                interest: interest || updateLoan.interest,
                                 payment_period: payment_period || updateLoan.payment_period
                             }
                         }))

@@ -25,11 +25,18 @@ module.exports = (sequelize, DataTypes) => {
         as: 'memberId'
       }
     },
-    amount:{
+    amount_borrowed:{
       type: DataTypes.BIGINT,
       allowNull: {
         args: false,
-        msg: "Please fill amount"
+        msg: "Please fill amount borrowed"
+      }
+    },
+    amount_remaining:{
+      type: DataTypes.BIGINT,
+      allowNull: {
+        args: false,
+        msg: "Please fill amount remaining"
       }
     },
     payment_period:{
@@ -37,6 +44,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: {
         args: false,
         msg: "Please fill payment period"
+      }
+    },
+    interest:{
+      type: DataTypes.INTEGER,
+      allowNull: {
+        args: false,
+        msg: "Please fill interest"
       }
     },
   }, {});

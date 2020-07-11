@@ -25,13 +25,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-      unique: true
     },
     nin: {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: false,
-      unique: true
+    },
+    pin: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     passport_photo: {
       type: DataTypes.STRING,
@@ -47,6 +48,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'memberId',
     });
     Member.hasMany(models.Loan, {
+      foreignKey: 'memberId',
+    });
+    Member.hasMany(models.Transaction, {
       foreignKey: 'memberId',
     });
   };

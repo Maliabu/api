@@ -29,7 +29,9 @@ class Expenses {
     static listExpense(req, res) {
         Expense.findAll()
             .then(expenses => {
-                res.status(200).json(expenses)
+                res.status(200).json({
+                    expenses: expenses
+                })
             }).catch(error => res.status(400).json({
                 error: error
             }))

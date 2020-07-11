@@ -35,6 +35,10 @@ module.exports = {
         allowNull: false,
         unique: true
       },
+      pin: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       passport_photo: {
         type: Sequelize.STRING,
         allowNull: false

@@ -1,4 +1,5 @@
 import model from '../models'
+const sendSms = require('./sms');
 
 
 const {
@@ -8,23 +9,117 @@ const {
 } = model;
 
 class Savings {
-    static createSaving(req, res) {
+    static debitSaving(req, res) {
         const {
             memberId,
-            amount
+            amount,
+            phoneNumber
         } = req.body;
 
         const userId = req.userData.userId;
-        Saving.create({
-            userId,
-            memberId,
-            amount
-        }).then(saving => res.status(200).json({
-            saving: saving
-        }))
-            .catch(error => res.status(400).json({
-                error: error
+        return Saving.findOne({
+            where: {
+                memberId: memberId
+            }
+        }).then(saving => {
+            if (saving) {
+
+                return saving.update({
+                    memberId: saving.memberId,
+                    userId: saving.userId,
+                    amount: parseInt(saving.amount) - parseInt(amount)
+                }).then(() => {
+                    const welcomeMessage = 'Your 2G0 Account has been debited with ' + amount + '. Your Account Balance is ' + saving.amount;
+                    const phone = "+256" + phoneNumber.slice(1);
+                    console.log("Details", { phone, welcomeMessage })
+                    sendSms(phone, welcomeMessage);
+
+                    res.status(200).send({
+                        message: 'Account Debited successfully',
+                    })
+                })
+                    .catch(error => res.status(400).send(error));
+
+            }
+            return Saving.create({
+                userId,
+                memberId,
+                amount
+            }).then(saving => res.status(200).json({
+                saving: saving
             }))
+                .catch(error => res.status(400).json({
+                    error: error
+                }))
+
+
+        }).catch(err => {
+            console.log(err);
+            res.status(404).json(err);
+        })
+
+    }
+
+    static createSaving(req, res) {
+        const {
+            memberId,
+            amount,
+            account_type,
+            phoneNumber
+        } = req.body;
+        const userId = req.userData.userId;
+        return Saving.findOne({
+            where: {
+                memberId: memberId
+            }
+        }).then(saving => {
+            if (saving) {
+
+                return saving.update({
+                    memberId: saving.memberId,
+                    userId: saving.userId,
+                    amount: parseInt(amount) + parseInt(saving.amount)
+                }).then(() => {
+                    const welcomeMessage = 'Your 2G0 Account has been credited with ' + amount + '. Your Account Balance is ' + saving.amount;
+                    const phone = "+256" + phoneNumber.slice(1);
+                    console.log("Details", { phone, welcomeMessage })
+                    sendSms(phone, welcomeMessage);
+                    res.status(200).send({
+                        message: 'Account Credited successfully',
+                    })
+                })
+                    .catch(error => res.status(400).send(error));
+
+            }
+            return Saving.create({
+                userId,
+                memberId,
+                account_type,
+                amount,
+                phoneNumber
+            }).then(saving => {
+                const welcomeMessage = 'Your 2G0 Account has been created with an initial deposit ' + amount + '. Your Account Balance is ' + saving.amount;
+                const phone = "+256" + phoneNumber.slice(1);
+                console.log("Details", { phone, welcomeMessage })
+                sendSms(phone, welcomeMessage);
+                res.status(200).json({
+                    saving: saving
+                })
+            })
+                .catch(error => {
+                    console.log(error)
+                    res.status(400).json({
+                        error: error
+                    })
+                })
+
+
+        }).catch(err => {
+            console.log(err);
+            res.status(404).json(err);
+        })
+
+
     }
 
     static listSaving(req, res) {
@@ -36,7 +131,7 @@ class Savings {
                 },
                 {
                     model: Member,
-                    attributes: ['firstName', 'lastName']
+                    attributes: ['id', 'firstName', 'lastName','phoneNumber']
                 }
             ]
         })
@@ -47,6 +142,9 @@ class Savings {
                         return {
                             id: saving.id,
                             member: saving.Member.firstName + " " + saving.Member.lastName,
+                            memberId: saving.Member.id,
+                            phoneNumber: saving.Member.phoneNumber,
+                            account_type: saving.account_type,
                             amount: saving.amount,
                             issued_by: saving.User.firstName + " " + saving.User.lastName,
                             date_issued: saving.createdAt
@@ -63,7 +161,8 @@ class Savings {
     static updateSaving(req, res) {
         const {
             memberId,
-            amount
+            amount,
+            account_type
         } = req.body;
 
         return Saving.findByPk(req.params.saving_id)
@@ -77,6 +176,7 @@ class Savings {
                     saving
                         .update({
                             memberId: memberId || saving.memberId,
+                            account_type: account_type || saving.account_type,
                             amount: amount || saving.amount,
                         })
                         .then((updateSaving) => res.status(200).send({
