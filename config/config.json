@@ -3,7 +3,7 @@
     "username": "root",
     "password": "mAma,123",
     "database": "bodaboda",
-    "host": "178.128.100.246",
+    "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": false
   },
@@ -11,7 +11,7 @@
     "username": "root",
     "password": "mAma,123",
     "database": "bodaboda",
-    "host": "178.128.100.246",
+    "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": false
   },
@@ -19,7 +19,7 @@
      "username": "root",
     "password": "mAma,123",
     "database": "bodaboda",
-    "host": "178.128.100.246",
+    "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": false
   }
