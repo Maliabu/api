@@ -9,17 +9,17 @@
   },
   "test": {
     "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
+    "password": "mAma,123",
+    "database": "bodaboda",
+    "host": "178.128.100.246",
     "dialect": "mysql",
     "operatorsAliases": false
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+     "username": "root",
+    "password": "mAma,123",
+    "database": "bodaboda",
+    "host": "178.128.100.246",
     "dialect": "mysql",
     "operatorsAliases": false
   }
