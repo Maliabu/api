@@ -28,7 +28,7 @@ class Loans {
                     userId: loan.userId,
                     amount_remaining: parseInt(loan.amount_remaining) - parseInt(amount)
                 }).then(loan => {
-                    const welcomeMessage = 'You have paid UGX ' + amount + ' off your 2GO Loan. Your Loan Balance is ' + loan.amount_remaining;
+                    const welcomeMessage = 'You have paid UGX ' + amount + ' off your 2GO Loan. Your Loan Balance is UGX ' + loan.amount_remaining;
                     const phone = "+256" + phoneNumber.slice(1);
                     console.log("Details", { phone, welcomeMessage })
                     sendSms(phone, welcomeMessage);
@@ -73,10 +73,10 @@ class Loans {
                     memberId: loan.memberId,
                     userId: loan.userId,
                     payment_period: loan.payment_period,
-                    amount_borrowed: parseInt(loan.amount_borrowed) + parseInt(amount),
-                    amount_remaining: parseInt(loan.amount_remaining) + parseInt(amount)
+                    amount_borrowed: parseInt(amount) + parseInt(interest / 100 * amount),
+                    amount_remaining: parseInt(amount) + parseInt(interest / 100 * amount),
                 }).then(loan => {
-                    const welcomeMessage = 'Your 2G0 Loan has been created with UGX' + amount;
+                    const welcomeMessage = 'You have been given a 2G0 Loan of UGX ' + amount;
                     const phone = "+256" + phoneNumber.slice(1);
                     console.log("Details", { phone, welcomeMessage })
                     sendSms(phone, welcomeMessage);
@@ -95,7 +95,7 @@ class Loans {
                 interest,
                 payment_period,
             }).then(loan => {
-                const welcomeMessage = 'Your 2G0 Loan has been created with UGX ' + amount;
+                const welcomeMessage = 'You have been given a 2G0 Loan of UGX ' + amount;
                 const phone = "+256" + phoneNumber.slice(1);
                 console.log("Details", { phone, welcomeMessage })
                 sendSms(phone, welcomeMessage);
