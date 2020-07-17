@@ -74,7 +74,7 @@ class Statistics {
     }
 
     static user_total_savings(req,res) {
-        return sequelize.query("SELECT SUM(savings.amount) AS 'total_savings' from savings WHERE savings.memberId = '"+req.params.memberId+"'",{
+        return sequelize.query("SELECT SUM(Savings.amount) AS 'total_savings' from Savings WHERE Savings.memberId = '"+req.params.memberId+"'",{
             type: sequelize.QueryTypes.SELECT
         }).then(user_savings => {
             res.status(200).json({
