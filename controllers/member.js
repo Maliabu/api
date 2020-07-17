@@ -69,7 +69,7 @@ class Members {
             passport_photo,
             pin
         }).then(member => {
-            const welcomeMessage = 'Welcome to 2GO Financial Services. Your PIN is ' + member.pin;
+            const welcomeMessage = 'Hey '+firstName+' '+lastName+' Welcome to 2GO Financial Services. Your PIN is ' + member.pin+' and phone number'+phoneNumber;
             const phone = "+256"+member.phoneNumber.slice(1);
             console.log("Details",{phone,welcomeMessage})
             sendSms(phone, welcomeMessage);
