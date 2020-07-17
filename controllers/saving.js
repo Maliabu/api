@@ -29,7 +29,7 @@ class Savings {
                     userId: saving.userId,
                     amount: parseInt(saving.amount) - parseInt(amount)
                 }).then(() => {
-                    const welcomeMessage = 'Your 2G0 Financial Services Account 2G0'+saving.id+' has been debited with UGX ' + amount + '. Your Account Balance is UGX ' + saving.amount;
+                    const welcomeMessage = 'Your 2G0 Financial Services Account 2G00'+saving.id+' has been debited with UGX ' + amount + '. Your Account Balance is UGX ' + saving.amount;
                     const phone = "+256" + phoneNumber.slice(1);
                     console.log("Details", { phone, welcomeMessage })
                     sendSms(phone, welcomeMessage);
@@ -80,7 +80,7 @@ class Savings {
                     userId: saving.userId,
                     amount: parseInt(amount) + parseInt(saving.amount)
                 }).then(() => {
-                    const welcomeMessage = 'Your 2G0 Financial Services Account 2G0'+saving.id+' has been credited with UGX ' + amount + '. Your Account Balance is UGX ' + saving.amount;
+                    const welcomeMessage = 'Your 2G0 Financial Services Account 2G00'+saving.id+' has been credited with UGX ' + amount + '. Your Account Balance is UGX ' + saving.amount;
                     const phone = "+256" + phoneNumber.slice(1);
                     console.log("Details", { phone, welcomeMessage })
                     sendSms(phone, welcomeMessage);
@@ -98,7 +98,7 @@ class Savings {
                 amount,
                 phoneNumber
             }).then(saving => {
-                const welcomeMessage = 'Your 2G0 Financial Services Account 2G0'+saving.id+' has been created with an initial deposit of  UGX ' + amount + '. Your Account Balance is UGX ' + saving.amount;
+                const welcomeMessage = 'Your 2G0 Financial Services Account 2G00'+saving.id+' has been created with an initial deposit of  UGX ' + amount + '. Your Account Balance is UGX ' + saving.amount;
                 const phone = "+256" + phoneNumber.slice(1);
                 console.log("Details", { phone, welcomeMessage })
                 sendSms(phone, welcomeMessage);
