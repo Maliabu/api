@@ -62,7 +62,7 @@ class Statistics {
     }
 
     static savings_trend(req,res) {
-        return sequelize.query("SELECT savings.createdAt AS 'Date',COUNT(savings.id) AS 'Count' from savings GROUP BY DAY(savings.createdAt)",{
+        return sequelize.query("SELECT Savings.createdAt AS 'Date',COUNT(Savings.id) AS 'Count' from Savings GROUP BY DAY(Savings.createdAt)",{
             type: sequelize.QueryTypes.SELECT
         }).then(savings_trend => {
             res.status(200).json({
@@ -86,7 +86,7 @@ class Statistics {
     }
 
     static user_total_loan(req,res) {
-        return sequelize.query("SELECT SUM(loans.amount) AS 'total_loan' from loans WHERE loans.memberId = '"+req.params.memberId+"'",{
+        return sequelize.query("SELECT SUM(Loans.amount) AS 'total_loan' from Loans WHERE Loans.memberId = '"+req.params.memberId+"'",{
             type: sequelize.QueryTypes.SELECT
         }).then(loans_amount => {
             res.status(200).json({
