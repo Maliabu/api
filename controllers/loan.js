@@ -28,7 +28,7 @@ class Loans {
                     userId: loan.userId,
                     amount_remaining: parseInt(loan.amount_remaining) - parseInt(amount)
                 }).then(loan => {
-                    const welcomeMessage = 'You have paid UGX ' + amount + ' off your 2GO Loan. Your Loan Balance is UGX ' + loan.amount_remaining;
+                    const welcomeMessage = 'You have paid UGX ' + amount + ' off your 2GO Financial Services Loan. Your Loan Balance is UGX ' + loan.amount_remaining;
                     const phone = "+256" + phoneNumber.slice(1);
                     console.log("Details", { phone, welcomeMessage })
                     sendSms(phone, welcomeMessage);
@@ -76,7 +76,7 @@ class Loans {
                     amount_borrowed: parseInt(amount) + parseInt(interest / 100 * amount),
                     amount_remaining: parseInt(amount) + parseInt(interest / 100 * amount),
                 }).then(loan => {
-                    const welcomeMessage = 'You have been given a 2G0 Loan of UGX ' + amount;
+                    const welcomeMessage = 'You have been given a 2G0 Finacial Services Loan of UGX ' + amount;
                     const phone = "+256" + phoneNumber.slice(1);
                     console.log("Details", { phone, welcomeMessage })
                     sendSms(phone, welcomeMessage);
@@ -95,7 +95,7 @@ class Loans {
                 interest,
                 payment_period,
             }).then(loan => {
-                const welcomeMessage = 'You have been given a 2G0 Loan of UGX ' + amount;
+                const welcomeMessage = 'You have been given a 2G0 Financial Services Loan of UGX ' + amount;
                 const phone = "+256" + phoneNumber.slice(1);
                 console.log("Details", { phone, welcomeMessage })
                 sendSms(phone, welcomeMessage);
