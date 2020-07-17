@@ -62,7 +62,7 @@ class Statistics {
     }
 
     static savings_trend(req,res) {
-        return sequelize.query("SELECT Savings.createdAt AS 'Date',COUNT(Savings.id) AS 'Count' from Savings GROUP BY DAY(Savings.createdAt)",{
+        return sequelize.query("SELECT Savings.createdAt AS 'Date',COUNT(Savings.id) AS 'Count' from Savings GROUP BY DAY(Savings.createdAt, Savings.id)",{
             type: sequelize.QueryTypes.SELECT
         }).then(savings_trend => {
             res.status(200).json({
