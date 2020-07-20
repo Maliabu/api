@@ -3,21 +3,21 @@
     "username": "root",
     "password": "mAma,123",
     "database": "bodaboda",
-    "host": "localhost",
+    "host": "178.128.100.246",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
     "password": "mAma,123",
     "database": "bodaboda",
-    "host": "localhost",
+    "host": "178.128.100.246",
     "dialect": "mysql"
   },
   "production": {
      "username": "root",
     "password": "mAma,123",
     "database": "bodaboda",
-    "host": "localhost",
+    "host": "178.128.100.246",
     "dialect": "mysql"
   }
 }
