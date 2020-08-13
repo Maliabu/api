@@ -1,19 +1,26 @@
 require('dotenv').config();
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
+const credentials = {
+    apiKey: 'YOUR_API_KEY',         // use your sandbox app API key for development in the test environment
+    username: 'YOUR_USERNAME',      // use 'sandbox' for development in the test environment
+};
+const AfricasTalking = require('africastalking')(credentials);
 
-const sendSms = (phone, message) => {
-  const client = require('twilio')(accountSid, authToken);
-  client.messages
-    .create({
-       body: message,
-       from: process.env.TWILIO_PHONE_NUMBER,
-       to: phone
-     })
-    .then(message => console.log(message.sid)).catch(err=>{
-        console.log(err);
-    });
+// Initialize a service e.g. SMS
+const sms = africastalking.SMS
+const phone = []
+
+// Use the service
+const options = {
+    to: phone,
+    message: "Dear customer, thank you for being part of 2go financial services limited"
 }
 
-module.exports = sendSms;
+// Send message and capture the response or error
+sms.send(options)
+    .then( response => {
+        console.log(response);
+    })
+    .catch( error => {
+        console.log(error);
+    });
