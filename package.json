@@ -24,7 +24,8 @@
     "sequelize": "^5.21.4",
     "sequelize-cli": "^5.5.1",
     "twilio": "^3.48.0",
-    "uuidv4": "^6.0.2"
+    "uuidv4": "^6.0.2",
+    "africastalking": "^0.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
